@@ -31,7 +31,9 @@ yargs(hideBin(process.argv))
         type: "string",
       });
     },
-    commitRepo
+    (argv) => {
+      commitRepo(argv.message);
+    }
   )
   .command("pull", "Pull commits to cloud", {}, pullRepo)
   .command(
