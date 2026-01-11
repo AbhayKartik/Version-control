@@ -14,6 +14,7 @@ async function pushRepo() {
       for (const file of files) {
         const filePath = path.join(commitPath, file);
         const fileContent = await fs.readFile(filePath);
+        console.log(fileContent);
         const params = {
           Bucket: S3_BUCKET,
           Key: `commits/${commitDir}/${file}`,

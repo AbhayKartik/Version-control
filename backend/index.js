@@ -45,7 +45,9 @@ yargs(hideBin(process.argv))
         type: "string",
       });
     },
-    revertRepo
+    (argv) => {
+      revertRepo(argv.commitId);
+    }
   )
   .command("push", "Push commits to cloud", {}, pushRepo)
   .demandCommand(1, "You need atleast one command")
