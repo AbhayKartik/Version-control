@@ -1,4 +1,6 @@
 const yargs = require("yargs");
+const express = require("express");
+const app = express();
 const { hideBin } = require("yargs/helpers");
 const { initRepo } = require("./controllers/init");
 const { addRepo } = require("./controllers/add");
@@ -8,6 +10,7 @@ const { revertRepo } = require("./controllers/revert");
 const { pushRepo } = require("./controllers/push");
 
 yargs(hideBin(process.argv))
+  .command("start", "Start a new server", {}, startServer)
   .command("init", "Initialise a new repository", {}, initRepo)
   .command(
     "add <file>",
@@ -52,3 +55,9 @@ yargs(hideBin(process.argv))
   .command("push", "Push commits to cloud", {}, pushRepo)
   .demandCommand(1, "You need atleast one command")
   .help().argv;
+
+function startServer() {
+  app.listen(3000, () => {
+    console.log(`app is listing `);
+  });
+}

@@ -12,7 +12,10 @@
   "type": "commonjs",
   "dependencies": {
     "aws-sdk": "^2.1693.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongodb": "^7.0.0",
     "uuid": "^13.0.0",
     "yargs": "^18.0.0"
   }
