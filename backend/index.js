@@ -1,6 +1,13 @@
+require("dotenv").config();
+
 const yargs = require("yargs");
 const express = require("express");
 const app = express();
+const cors = require("cors");
+const http = require("http");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const { Server } = require("socket.io");
 const { hideBin } = require("yargs/helpers");
 const { initRepo } = require("./controllers/init");
 const { addRepo } = require("./controllers/add");
@@ -8,6 +15,7 @@ const { commitRepo } = require("./controllers/commit");
 const { pullRepo } = require("./controllers/pull");
 const { revertRepo } = require("./controllers/revert");
 const { pushRepo } = require("./controllers/push");
+const { Socket } = require("dgram");
 
 yargs(hideBin(process.argv))
   .command("start", "Start a new server", {}, startServer)
@@ -57,7 +65,47 @@ yargs(hideBin(process.argv))
   .help().argv;
 
 function startServer() {
-  app.listen(3000, () => {
-    console.log(`app is listing `);
+  const PORT = process.env.PORT || 3000;
+  app.use(bodyParser.json());
+  app.use(express.json());
+
+  const mongoUrl = process.env.MONGO_URL;
+  mongoose
+    .connect(mongoUrl)
+    .then(() => console.log("MongoDb connected"))
+    .catch((e) => console.error("unable to coonect :", e));
+
+  app.use(cors({ origin: "*" }));
+
+  app.get("/", (req, res) => {
+    res.send("Ha  bhai ho gya");
+  });
+
+  const httpServer = http.createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+    },
+  });
+
+  io.on("connection", (socket) => {
+    socket.on("JoinRoom", (userId) => {
+      user = userId;
+      console.log("=================");
+      console.log(user);
+      console.log("=================");
+      socket.join(userId);
+    });
+  });
+
+  const db = mongoose.connection;
+
+  db.once("open", async () => {
+    console.log("CRUD OPERATION");
+  });
+
+  httpServer.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 }
