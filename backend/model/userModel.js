@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { string, required } = require("yargs");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
