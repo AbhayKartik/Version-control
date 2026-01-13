@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const mainRouter = require("./routes/main.router");
 const yargs = require("yargs");
 const express = require("express");
 const app = express();
@@ -9,13 +10,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const { hideBin } = require("yargs/helpers");
+
 const { initRepo } = require("./controllers/init");
 const { addRepo } = require("./controllers/add");
 const { commitRepo } = require("./controllers/commit");
 const { pullRepo } = require("./controllers/pull");
 const { revertRepo } = require("./controllers/revert");
 const { pushRepo } = require("./controllers/push");
-const { Socket } = require("dgram");
 
 yargs(hideBin(process.argv))
   .command("start", "Start a new server", {}, startServer)
@@ -70,17 +71,14 @@ function startServer() {
   app.use(express.json());
 
   const mongoUrl = process.env.MONGO_URL;
+
   mongoose
     .connect(mongoUrl)
     .then(() => console.log("MongoDb connected"))
     .catch((e) => console.error("unable to coonect :", e));
 
   app.use(cors({ origin: "*" }));
-
-  app.get("/", (req, res) => {
-    res.send("Ha  bhai ho gya");
-  });
-
+  app.use("/", mainRouter);
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
     cors: {
