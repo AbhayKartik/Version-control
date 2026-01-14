@@ -7,7 +7,7 @@ const signUp = (req, res) => {
 };
 
 const login = (req, res) => {
-  res.send("User Looged In");
+  res.send("User Logged In");
 };
 
 const getUserProfile = (req, res) => {
