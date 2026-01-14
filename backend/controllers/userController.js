@@ -1,9 +1,57 @@
-const getAllUsers = (req, res) => {
-  res.send("All users get ");
-};
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { MongoClient } = require("mongodb");
 
-const signUp = (req, res) => {
-  res.send("User Signed In");
+const mongoUrl = process.env.MONGO_URL;
+
+let client;
+
+async function connectClient() {
+  if (!client) {
+    client = new MongoClient(mongoUrl);
+
+    await client.connect();
+  }
+}
+const getAllUsers = (req, res) => {};
+
+const signUp = async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
+    await connectClient();
+    const db = client.db("MyGithub");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ username });
+    if (user) {
+      return res.status(400).json({ message: "User Already Exist !" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = {
+      username,
+      password: hashedPassword,
+      email,
+      repositories: [],
+      followedUsers: [],
+      starRepos: [],
+    };
+
+    const result = await usersCollection.insertOne(newUser);
+
+    const token = jwt.sign(
+      { id: result.insertId },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+    res.json({ token });
+  } catch (error) {
+    console.error("ERROR in Sign up", error);
+    res.status(500).send("Server Error");
+  }
 };
 
 const login = (req, res) => {
