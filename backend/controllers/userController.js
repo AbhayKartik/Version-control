@@ -1,8 +1,8 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { MongoClient } = require("mongodb");
-
+const { MongoClient, ReturnDocument } = require("mongodb");
+var ObjectId = require("mongodb").ObjectId;
 const mongoUrl = process.env.MONGO_URL;
 
 let client;
@@ -14,7 +14,19 @@ async function connectClient() {
     await client.connect();
   }
 }
-const getAllUsers = (req, res) => {};
+const getAllUsers = async (req, res) => {
+  try {
+    await connectClient();
+    const db = client.db("MyGithub");
+    const usersCollection = db.collection("users");
+
+    const users = await usersCollection.find({}).toArray();
+    res.json(users);
+  } catch (error) {
+    console.error("ERROR in Fetching", error.message);
+    res.status(500).send("Server Error");
+  }
+};
 
 const signUp = async (req, res) => {
   const { username, email, password } = req.body;
@@ -49,7 +61,7 @@ const signUp = async (req, res) => {
     );
     res.json({ token });
   } catch (error) {
-    console.error("ERROR in Sign up", error);
+    console.error("ERROR in Sign up", error.message);
     res.status(500).send("Server Error");
   }
 };
@@ -81,16 +93,83 @@ const login = async (req, res) => {
   }
 };
 
-const getUserProfile = (req, res) => {
-  res.send("User Profile Fetched");
+const getUserProfile = async (req, res) => {
+  const currentUser = req.params.id;
+  try {
+    await connectClient();
+    const db = client.db("MyGithub");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(currentUser),
+    });
+
+    if (!user) {
+      return res.json({ message: "User not found " });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("ERROR in user profile", error.message);
+    res.status(500).send("Server Error");
+  }
 };
 
-const updateUserProfile = (req, res) => {
-  res.send("User Profile update");
+const updateUserProfile = async (req, res) => {
+  const currentUserID = req.params.id;
+  const { email, password } = req.body;
+  try {
+    await connectClient();
+    const db = client.db("MyGithub");
+    const usersCollection = db.collection("users");
+
+    let updateField = { email };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateField.password = hashedPassword;
+    }
+
+    const result = await usersCollection.findOneAndUpdate(
+      {
+        _id: new ObjectId(currentUserID),
+      },
+      { $set: updateField },
+      { returnDocument: "after" }
+    );
+    console.log(result);
+    if (!result) {
+      res.status(404).json({ message: "User Not Found" });
+    }
+
+    res.send(result);
+  } catch (error) {
+    console.error("ERROR in user profile updating", error.message);
+    res.status(500).send("Server Error");
+  }
 };
 
-const deleteUserProfile = (req, res) => {
-  res.send("User Profile Deleted");
+const deleteUserProfile = async (req, res) => {
+  const currentUserID = req.params.id;
+
+  try {
+    await connectClient();
+    const db = client.db("MyGithub");
+    const usersCollection = db.collection("users");
+
+    const result = await usersCollection.deleteOne({
+      _id: new ObjectId(currentUserID),
+    });
+
+    if (result.deleteCount == 0) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+
+    res.json({ message: "User Deleted" });
+  } catch (error) {
+    console.error("ERROR in user profile deleting", error.message);
+    res.status(500).send("Server Error");
+  }
 };
 
 module.exports = {
