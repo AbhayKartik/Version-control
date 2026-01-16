@@ -104,7 +104,7 @@ const updateRepositoryById = async (req, res) => {
     const result = await repository.save();
 
     res.json({
-      message: "Repository Updated Successfullt",
+      message: "Repository Updated Successfully",
       repository: result,
     });
   } catch (error) {
