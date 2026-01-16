@@ -5,8 +5,11 @@ const repoRouter = express.Router();
 repoRouter.post("/repo/create", repoController.createRepository);
 repoRouter.get("/repo/all", repoController.getAllRepository);
 repoRouter.get("/repo/:id", repoController.fecthRepositoryById);
-repoRouter.get("/repo/:name", repoController.fecthRepositoryByName);
-repoRouter.get("/repo/:userID", repoController.fecthRepositoryForCurrentUser);
+repoRouter.get("/repo/name/:name", repoController.fecthRepositoryByName);
+repoRouter.get(
+  "/repo/user/:userID",
+  repoController.fecthRepositoryForCurrentUser
+);
 repoRouter.put("/repo/update/:id", repoController.updateRepositoryById);
 repoRouter.delete("/repo/delete/:id", repoController.deleteRepositoryById);
 repoRouter.patch("/repo/toggle/:id", repoController.toggleVisibilityById);
