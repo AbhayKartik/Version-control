@@ -28,7 +28,7 @@ const createRepository = async (req, res) => {
     const result = await newRepository.save();
     res
       .status(201)
-      .json({ message: "Repository Created", repositoryId: result._id });
+      .json({ message: "New Repository Created", repositoryId: result._id });
   } catch (error) {
     console.error("Error During Creating Repo", error.message);
     res.status(500).send("Server Error");
