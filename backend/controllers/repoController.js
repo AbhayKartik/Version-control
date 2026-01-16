@@ -83,7 +83,7 @@ const fecthRepositoryForCurrentUser = async (req, res) => {
       return res.status(404).json({ error: "No Repos was Found!" });
     }
 
-    res.json({ message: "Repository found", repositories });
+    res.json({ message: `${repositories.length} Repo Found`, repositories });
   } catch (error) {
     console.error("Error During user Repo", error.message);
     res.status(500).send("Server Error");
