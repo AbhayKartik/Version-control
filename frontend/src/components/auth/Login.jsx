@@ -40,6 +40,8 @@ const Login = () => {
         } catch (err) {
             console.error(err);
             alert("Login Failed!");
+            setEmail("")
+            setPassword("")
             setLoading(false);
         }
     };

@@ -37,6 +37,9 @@ const Signup = () => {
         } catch (err) {
             console.error(err);
             alert("Signup Failed!");
+            setEmail("")
+            setPassword("")
+            setUsername("")
             setLoading(false);
         }
     };
