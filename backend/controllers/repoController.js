@@ -75,9 +75,9 @@ const fecthRepositoryByName = async (req, res) => {
 };
 
 const fecthRepositoryForCurrentUser = async (req, res) => {
-  const userId = req.user;
+  const { userID } = req.params;
   try {
-    const repositories = await Repository.find({ owner: userId });
+    const repositories = await Repository.find({ owner: userID });
 
     if (!repositories || repositories.length == 0) {
       return res.status(404).json({ error: "No Repos was Found!" });

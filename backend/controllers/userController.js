@@ -55,11 +55,11 @@ const signUp = async (req, res) => {
     const result = await usersCollection.insertOne(newUser);
 
     const token = jwt.sign(
-      { id: result.insertId },
+      { id: result.insertedId },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
-    res.json({ token });
+    res.json({ token, userId: result.insertedId });
   } catch (error) {
     console.error("ERROR in Sign up", error.message);
     res.status(500).send("Server Error");
@@ -135,7 +135,7 @@ const updateUserProfile = async (req, res) => {
         _id: new ObjectId(currentUserID),
       },
       { $set: updateField },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     console.log(result);
     if (!result) {
