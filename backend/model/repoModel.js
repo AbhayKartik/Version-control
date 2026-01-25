@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const RepositorySchema = new Schema({
+  timestamp: true,
   name: {
     type: String,
     required: true,
