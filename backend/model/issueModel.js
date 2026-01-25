@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const IssueSchema = new Schema({
+  timestamp: true,
+
   tittle: {
     type: String,
     required: true,

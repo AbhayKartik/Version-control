@@ -47,7 +47,7 @@ const Login = () => {
     };
 
     return (
-        <div className="login-wrapper">
+        <div className="login-wrapper" style={{ height: "100vh", width: "100vw" }}>
             <div className="login-logo-container">
                 <img className="logo-login" src={logo} alt="Logo" />
             </div>
